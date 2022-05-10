@@ -1,2 +1,4 @@
 Example/RoutingHTTPServer.xcodeproj/*
 !project.pbxproj
+.build/
+xcuserdata/

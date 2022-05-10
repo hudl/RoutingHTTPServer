@@ -31,7 +31,7 @@
 	HTTPMessage *request = [[HTTPMessage alloc] initEmptyRequest];
 
 	response = [http routeMethod:@"GET" withPath:@"/null" parameters:params request:request connection:nil];
-	STAssertNil(response, @"Received response for path that does not exist");
+	XCTAssertNil(response, @"Received response for path that does not exist");
 
 	[self verifyRouteWithMethod:@"GET" path:@"/hello"];
 	[self verifyRouteWithMethod:@"GET" path:@"/hello/you"];
@@ -52,7 +52,7 @@
 - (void)testPost {
 	NSError *error = nil;
 	if (![http start:&error]) {
-		STFail(@"HTTP server failed to start");
+		XCTFail(@"HTTP server failed to start");
 	}
 
 	NSString *xmlString = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -129,12 +129,12 @@
 	HTTPMessage *request = [[HTTPMessage alloc] initEmptyRequest];
 
 	response = [http routeMethod:method withPath:path parameters:params request:request connection:nil];
-	STAssertNotNil(response.proxiedResponse, @"Proxied response is nil for %@ %@", method, path);
+	XCTAssertNotNil(response.proxiedResponse, @"Proxied response is nil for %@ %@", method, path);
 
 	NSUInteger length = [response.proxiedResponse contentLength];
 	NSData *data = [response.proxiedResponse readDataOfLength:length];
 	NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	STAssertEqualObjects(responseString, path, @"Unexpected response for %@ %@", method, path);
+	XCTAssertEqualObjects(responseString, path, @"Unexpected response for %@ %@", method, path);
 }
 
 - (void)verifyRouteNotFoundWithMethod:(NSString *)method path:(NSString *)path {
@@ -143,7 +143,7 @@
 	HTTPMessage *request = [[HTTPMessage alloc] initEmptyRequest];
 
 	response = [http routeMethod:method withPath:path parameters:params request:request connection:nil];
-	STAssertNil(response, @"Response should have been nil for %@ %@", method, path);
+	XCTAssertNil(response, @"Response should have been nil for %@ %@", method, path);
 }
 
 - (void)verifyMethod:(NSString *)method path:(NSString *)path contentType:(NSString *)contentType inputString:(NSString *)inputString responseString:(NSString *)expectedResponseString {
@@ -164,15 +164,15 @@
 	NSURLResponse *response;
 	NSHTTPURLResponse *httpResponse;
 	NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-	STAssertNotNil(response, @"No response received for %@ %@", method, path);
-	STAssertNotNil(responseData, @"No response data received for %@ %@", method, path);
-	STAssertTrue([response isKindOfClass:[NSHTTPURLResponse class]], @"Response is not an NSHTTPURLResponse");
+	XCTAssertNotNil(response, @"No response received for %@ %@", method, path);
+	XCTAssertNotNil(responseData, @"No response data received for %@ %@", method, path);
+	XCTAssertTrue([response isKindOfClass:[NSHTTPURLResponse class]], @"Response is not an NSHTTPURLResponse");
 
 	httpResponse = (NSHTTPURLResponse *)response;
-	STAssertEquals([httpResponse statusCode], 200L, @"Unexpected status code for %@ %@", method, path);
+	XCTAssertEqual([httpResponse statusCode], 200L, @"Unexpected status code for %@ %@", method, path);
 
 	NSString *responseString = [[NSString alloc] initWithBytes:[responseData bytes] length:[responseData length] encoding:NSUTF8StringEncoding];
-	STAssertEqualObjects(responseString, expectedResponseString, @"Unexpected response for %@ %@", method, path);
+	XCTAssertEqualObjects(responseString, expectedResponseString, @"Unexpected response for %@ %@", method, path);
 }
 
 @end
